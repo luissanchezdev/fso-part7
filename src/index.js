@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom/client'
 import { useState } from 'react'
+import { Table, Form, Button, Navbar, Nav } from 'react-bootstrap'
 
 import {
   BrowserRouter as Router,
@@ -31,16 +32,25 @@ const Note = ({ note }) => {
   )
 }
 
-const Notes = ({ notes }) => (
+const Notes = (props) => (
   <div>
     <h2>Notes</h2>
-    <ul>
-      {notes.map(note =>
-        <li key={note.id}>
-          <Link to={`/notes/${note.id}`}>{note.content}</Link>
-        </li>
-      )}
-    </ul>
+    <Table striped>
+      <tbody>
+        {props.notes.map(note =>
+          <tr key={note.id}>
+            <td>
+              <Link to={`/notes/${note.id}`}>
+                {note.content}
+              </Link>
+            </td>
+            <td>
+              {note.user}
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </Table>
   </div>
 )
 
@@ -67,15 +77,15 @@ const Login = (props) => {
   return (
     <div>
       <h2>login</h2>
-      <form onSubmit={onSubmit}>
-        <div>
-          username: <input />
-        </div>
-        <div>
-          password: <input type='password' />
-        </div>
-        <button type="submit">login</button>
-      </form>
+      <Form onSubmit={onSubmit}>
+        <Form.Group>
+          <Form.Label>Username</Form.Label>
+          <Form.Control type='text' name='username' />
+          <Form.Label>Password</Form.Label>
+          <Form.Control type='password' />
+          <Button variant='primary' type="submit">login</Button>
+        </Form.Group>
+      </Form>
     </div>
   )
 }
@@ -104,24 +114,47 @@ const App = () => {
 
   const [user, setUser] = useState(null)
 
+  const [message, setMessage] = useState(null)
+
+  const login = (user) => {
+    setUser(user)
+    setMessage(`welcome ${user}`)
+    setTimeout(() => {
+      setMessage(null)
+    }, 10000)
+  }
+
   const match = useMatch('/notes/:id')
 
   const note = match
     ? notes.find(note => note.id === Number(match.params.id))
     : null
 
-
-  const login = (user) => {
-    setUser(user)
-  }
-
   const padding = {
     padding: 5
   }
 
   return (
-    <div>
+    <div className='container'>
       <div>
+        <Navbar collapseOnSelect expand='lg' bg='dark' variant='dark'>
+          <Navbar.Toggle aria-controls='responsive-navbar-nav' />
+          <Navbar.Collapse id='responsive-navbar-nav'>
+            <Nav className='mr-auto'>
+              <Nav.Link href='#' as='span'>
+                <Link style={ padding } to='/'>home</Link>
+              </Nav.Link>
+              <Nav.Link href='#' as='span'>
+                <Link style={ padding } to='/notes'>notes</Link>
+              </Nav.Link>
+              <Nav.Link href='#' as='span'>
+                <Link style={ padding } to='/users'>users</Link>
+              </Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
+
+
         <Link style={padding} to="/">home</Link>
         <Link style={padding} to="/notes">notes</Link>
         <Link style={padding} to="/users">users</Link>
